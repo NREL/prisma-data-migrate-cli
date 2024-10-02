@@ -12,6 +12,7 @@ This CLI exposes the processes described in the [Data migrations article from Pr
 - [Usage](#usage)
   - [Usage example](#usage-example)
   - [Usage recommendations](#usage-recommendations)
+- [Caveats](#caveats)
 - [License](#license)
 
 ## Installation
@@ -138,6 +139,8 @@ _Finally, you may_ run `prisma migrate dev --create-only --name contract-user-na
 
 It is heavily recommend that dependents of this CLI utilize package-scripts to organize these commands into a series of sensible defaults for developers of their application. It is recommended that you only interface with your database schema via these commands.
 
+It is also recommended that you update your `tsconfig.json` file to add an [exclude path](https://www.typescriptlang.org/tsconfig/#exclude) equal to `"prisma/migrations"`. That way type errors coming from your data-model contractions don't flag in your CI/CD.
+
 #### Example
 
 ```json
@@ -153,6 +156,7 @@ It is heavily recommend that dependents of this CLI utilize package-scripts to o
 
 - Currently there is no command to run _only_ a specific data-migration if your migration history has become out of sync by running the wrong `prisma migrate` command directly.
 - There is not yet support for [multi-file schemas](https://www.prisma.io/blog/organize-your-prisma-schema-with-multi-file-support)
+- If you are using SQLite and your database file is identified with a relative path, you must either change it to be an absolute path or not use snapshots.
 
 ## License
 
