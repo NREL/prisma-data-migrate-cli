@@ -1,6 +1,5 @@
 import { defineCommand } from "citty";
 import { getAllMigrations } from "../utils/getAllMigrations";
-import difference from "lodash/difference";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { templates } from "../templates";
@@ -8,74 +7,32 @@ import { fileExists } from "../utils/fileExists";
 
 export const create = defineCommand({
   meta: {
-    description: "Generate an initial migration, without running it.",
+    description:
+      "Generate a data-migration to add to the latest generated migration.",
   },
   args: {
-    withData: {
-      alias: ["with-data", "wd"],
-      type: "boolean",
-      description: "Does this migration need data-migration scripting?",
-      default: false,
-    },
     typeSafe: {
-      alias: ["type-safe", "t"],
+      alias: ["snapshot", "s"],
       type: "boolean",
       description:
-        "Does this migration require a type-safe data-migration using a snapshot of the Prisma schema?",
+        "Should this migration receive a snapshot.prisma file representing the database at that point in time.",
       default: false,
     },
   },
   async run({ args }) {
-    if (args.typeSafe && !args.withData) {
-      console.error(
-        `The "--type-safe, -t" argument requires the "--with-data, --wd" argument.`
-      );
-      process.exit(255);
-    }
-
-    if (!(await fileExists(path.resolve(process.cwd(), "./prisma")))) {
+    if (!(await fileExists(path.resolve(process.cwd(), "prisma")))) {
       console.error(
         `This CLI must be run from your project root, which should have a "prisma" directory.`
       );
       process.exit(255);
     }
 
-    const allInitialMigrations = await getAllMigrations();
+    const [migration] = (await getAllMigrations()).reverse();
 
-    // Run the underlying Prisma migration generator command
-    // TODO - Better process the stdio, and avoid printing
-    // messages from Prisma like:
-    // > "You can now edit it and apply it by running prisma migrate dev."
-    try {
-      await $`prisma migrate dev --create-only`.stdio(
-        "inherit",
-        "inherit",
-        "inherit"
-      );
-    } catch (e) {
-      if (
-        e instanceof Error &&
-        "exitCode" in e &&
-        typeof e.exitCode === "number"
-      ) {
-        process.exit(e.exitCode);
-      } else throw e;
-    }
-
-    if (!args.withData) {
-      process.exit(0);
-    }
-
-    const allNewMigrations = await getAllMigrations();
-
-    const newMigrations = difference(allNewMigrations, allInitialMigrations);
-
-    if (newMigrations.length !== 1) {
-      console.error("Migration failed to generate as expected.");
+    if (!migration) {
+      console.error("No migrations found.");
       process.exit(255);
     }
-
-    const [migration] = newMigrations;
 
     await fs.copyFile(
       templates[
@@ -87,14 +44,23 @@ export const create = defineCommand({
       )
     );
 
-    if (args.typeSafe) {
-      await fs.copyFile(
-        path.resolve(process.cwd(), "./prisma/schema.prisma"),
-        path.resolve(
-          process.cwd(),
-          `./prisma/migrations/${migration}/snapshot.prisma`
-        )
-      );
-    }
+    console.log(
+      `New data-migration.ts file added to latest migration ${migration}`
+    );
+
+    if (!args.typeSafe) return;
+    await fs.copyFile(
+      path.resolve(process.cwd(), "prisma/schema.prisma"),
+      path.resolve(
+        process.cwd(),
+        "prisma/migrations",
+        migration!,
+        "snapshot.prisma"
+      )
+    );
+
+    console.log(
+      `New snapshot.prisma file added to latest migration ${migration}`
+    );
   },
 });

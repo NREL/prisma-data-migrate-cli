@@ -1,7 +1,7 @@
 import "dotenv/config";
 import "zx/globals";
 import { runMain, defineCommand } from "citty";
-import { create, apply } from "./commands";
+import { create, apply, clientRewind } from "./commands";
 
 const main = defineCommand({
   meta: {
@@ -9,7 +9,7 @@ const main = defineCommand({
     version: "0.0.0",
     description: "A CLI wrapper around Prisma migrate commands.",
   },
-  subCommands: { create, apply },
+  subCommands: { create, apply, "client-rewind": clientRewind },
 });
 
 export default () => runMain(main);
