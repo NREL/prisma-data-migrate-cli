@@ -11,8 +11,8 @@ export const create = defineCommand({
       "Generate a data-migration to add to the latest generated migration.",
   },
   args: {
-    typeSafe: {
-      alias: ["snapshot", "s"],
+    snapshot: {
+      alias: ["s"],
       type: "boolean",
       description:
         "Should this migration receive a snapshot.prisma file representing the database at that point in time.",
@@ -36,7 +36,7 @@ export const create = defineCommand({
 
     await fs.copyFile(
       templates[
-        args.typeSafe ? "typed-data-migration.ts" : "untyped-data-migration.ts"
+        args.snapshot ? "typed-data-migration.ts" : "untyped-data-migration.ts"
       ],
       path.resolve(
         process.cwd(),
@@ -48,7 +48,7 @@ export const create = defineCommand({
       `New data-migration.ts file added to latest migration ${migration}`
     );
 
-    if (!args.typeSafe) return;
+    if (!args.snapshot) return;
     await fs.copyFile(
       path.resolve(process.cwd(), "prisma/schema.prisma"),
       path.resolve(

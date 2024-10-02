@@ -3,7 +3,8 @@ import { getAllAppliedMigrations } from "../utils/getAllAppliedMigrations";
 import { getAllMigrations } from "../utils/getAllMigrations";
 import difference from "lodash/difference";
 import { fileExists } from "../utils/fileExists";
-import { runTransactionsFromModule } from "../utils/runTransactionsFromModule";
+import { runDataMigration } from "../utils/runDataMigration";
+import path from "node:path";
 
 export const apply = defineCommand({
   meta: {
@@ -11,6 +12,13 @@ export const apply = defineCommand({
   },
   args: {},
   async run() {
+    await $`prisma generate`;
+    if (!fileExists(path.resolve(process.cwd(), "prisma"))) {
+      console.error(
+        `This CLI must be run from your project root, which should have a "prisma" directory.`
+      );
+      process.exit(255);
+    }
     const appliedMigrations = await getAllAppliedMigrations();
     const allMigrations = await getAllMigrations();
 
@@ -67,9 +75,20 @@ export const apply = defineCommand({
         "data-migration.ts"
       );
 
+      const schemaSnapshotPath = path.resolve(
+        migrationDirectory,
+        "snapshot.prisma"
+      );
+
       if (await fileExists(migrationScriptPath)) {
-        await runTransactionsFromModule(migrationScriptPath);
+        await runDataMigration(
+          migrationScriptPath,
+          (await fileExists(schemaSnapshotPath))
+            ? schemaSnapshotPath
+            : undefined
+        );
       }
+      await $`prisma generate`;
     }
   },
 });

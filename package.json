@@ -4,7 +4,7 @@
   "description": "A CLI wrapper around prisma migrate commands for supporting TypeScript data-migrations.",
   "type": "module",
   "author": "ethan@standel.io",
-  "license": "ISC",
+  "license": "BSD-3-Clause",
   "bin": {
     "prisma-data-migrate-cli": "./bin.js"
   },
