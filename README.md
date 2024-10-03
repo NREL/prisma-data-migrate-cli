@@ -17,13 +17,11 @@ This CLI exposes the processes described in the [Data migrations article from Pr
 
 ## Installation
 
-Current `prisma-data-migrate-cli` is not yet on NPM. However, this CLI is built to require no build steps. So it can be installed directly from the Github repository.
-
-`npm i https://github.com/NREL/prisma-data-migrate-cli#<commit-hash-here>`
+`npm i prisma-data-migrate-cli`
 
 or
 
-`yarn add https://github.com/NREL/prisma-data-migrate-cli#<commit-hash-here>`
+`yarn add prisma-data-migrate-cli`
 
 Make sure you add a commit hash to the URL, otherwise every installation will will pull the latest version available on the `main` branch.
 

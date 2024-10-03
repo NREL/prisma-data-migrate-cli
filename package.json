@@ -1,10 +1,12 @@
 {
   "name": "prisma-data-migrate-cli",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "A CLI wrapper around prisma migrate commands for supporting TypeScript data-migrations.",
   "type": "module",
   "author": "ethan@standel.io",
   "license": "BSD-3-Clause",
+  "repository": "https://github.com/NREL/prisma-data-migrate-cli",
+  "homepage": "https://github.com/NREL/prisma-data-migrate-cli",
   "bin": {
     "prisma-data-migrate-cli": "./bin.js"
   },
