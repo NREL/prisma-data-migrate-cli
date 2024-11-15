@@ -1,7 +1,4 @@
-import { tsImport } from "tsx/esm/api";
 import path from "node:path";
-import { moduleIsValid } from "./moduleIsValid";
-import { attemptTransaction } from "./attemptTransaction";
 
 // MAJOR UPDATE, I need to run $`prisma generate` for the types of the client
 // and then run the modules via $`tsx ...` so that they get the properly typed DB clients

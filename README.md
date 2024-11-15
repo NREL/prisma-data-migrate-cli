@@ -23,8 +23,6 @@ or
 
 `yarn add prisma-data-migrate-cli`
 
-Make sure you add a commit hash to the URL, otherwise every installation will will pull the latest version available on the `main` branch.
-
 ## Commands
 
 ### `apply`
